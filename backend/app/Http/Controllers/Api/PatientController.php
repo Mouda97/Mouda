@@ -77,9 +77,29 @@ class PatientController extends Controller
             ], 404);
         }
 
+        // Récupérer les signes vitaux du patient
+        $vitalSigns = \App\Models\VitalSign::where('patient_id', $patient->id)
+            ->orderBy('measurement_date', 'desc')
+            ->get();
+
+        // Récupérer les documents du patient
+        $documents = \App\Models\Document::where('patient_id', $patient->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Récupérer les consultations du patient
+        $consultations = \App\Models\Consultation::where('patient_id', $patient->id)
+            ->orderBy('consultation_date', 'desc')
+            ->get();
+
         return response()->json([
             'success' => true,
-            'data' => $patient,
+            'data' => [
+                'patient' => $patient,
+                'vital_signs' => $vitalSigns,
+                'documents' => $documents,
+                'consultations' => $consultations
+            ],
             'message' => 'Patient trouvé.'
         ], 200);
     }

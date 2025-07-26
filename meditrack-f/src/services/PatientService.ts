@@ -15,7 +15,7 @@ export const getAll = async (): Promise<Patient[]> => {
 export const getById = async (id: number): Promise<Patient> => {
   try {
     const response = await api.get(`${base}/${id}`);
-    return response.data.data;
+    return response.data.data; // { patient, vital_signs }
   } catch {
     throw new Error(`Impossible de récupérer le patient #${id}.`);
   }

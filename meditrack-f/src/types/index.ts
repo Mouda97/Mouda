@@ -28,6 +28,7 @@ export interface Patient {
   status: 'suivi-chronique' | 'aigu' | 'termine';
   room?: string | null;
   last_consultation?: string | null;
+  consultations?: Consultation[];
   created_at: string;
   updated_at: string;
 }

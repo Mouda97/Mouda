@@ -173,11 +173,6 @@
     "@babel/helper-string-parser" "^7.27.1"
     "@babel/helper-validator-identifier" "^7.27.1"
 
-"@esbuild/linux-x64@0.25.6":
-  version "0.25.6"
-  resolved "https://registry.npmjs.org/@esbuild/linux-x64/-/linux-x64-0.25.6.tgz"
-  integrity sha512-A6bJB41b4lKFWRKNrWoP2LHsjVzNiaurf7wyj/XtFNTsnPuxwEBWHLty+ZE0dWBKuSK1fvKgrKaNjBS7qbFKig==
-
 "@esbuild/win32-x64@0.25.6":
   version "0.25.6"
   resolved "https://registry.npmjs.org/@esbuild/win32-x64/-/win32-x64-0.25.6.tgz"
@@ -345,16 +340,6 @@
   version "1.0.0-beta.19"
   resolved "https://registry.npmjs.org/@rolldown/pluginutils/-/pluginutils-1.0.0-beta.19.tgz"
   integrity sha512-3FL3mnMbPu0muGOCaKAhhFEYmqv9eTfPSJRJmANrCwtgK8VuxpsZDGK+m0LYAGoyO8+0j5uRe4PeyPDK1yA/hA==
-
-"@rollup/rollup-linux-x64-gnu@4.45.1":
-  version "4.45.1"
-  resolved "https://registry.npmjs.org/@rollup/rollup-linux-x64-gnu/-/rollup-linux-x64-gnu-4.45.1.tgz"
-  integrity sha512-+E/lYl6qu1zqgPEnTrs4WysQtvc/Sh4fC2nByfFExqgYrqkKWp1tWIbe+ELhixnenSpBbLXNi6vbEEJ8M7fiHw==
-
-"@rollup/rollup-linux-x64-musl@4.45.1":
-  version "4.45.1"
-  resolved "https://registry.npmjs.org/@rollup/rollup-linux-x64-musl/-/rollup-linux-x64-musl-4.45.1.tgz"
-  integrity sha512-a6WIAp89p3kpNoYStITT9RbTbTnqarU7D8N8F2CV+4Cl9fwCOZraLVuVFvlpsW0SbIiYtEnhCZBPLoNdRkjQFw==
 
 "@rollup/rollup-win32-x64-msvc@4.45.1":
   version "4.45.1"

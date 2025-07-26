@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
 
 class Document extends Model
 {
@@ -27,6 +28,12 @@ class Document extends Model
     /**
      * Relations
      */
+    public function createdBy()
+    {
+        // Utilise le champ 'uploaded_by' si c'est celui présent dans la table documents
+        return $this->belongsTo(User::class, 'uploaded_by');
+    }
+    // ...existing code...
     public function patient()
     {
         return $this->belongsTo(Patient::class);
