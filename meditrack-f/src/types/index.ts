@@ -29,6 +29,8 @@ export interface Patient {
   room?: string | null;
   last_consultation?: string | null;
   consultations?: Consultation[];
+  documents?: Document[];
+  vital_signs?: VitalSigns[];
   created_at: string;
   updated_at: string;
 }

@@ -60,7 +60,7 @@ const Sidebar: React.FC = () => {
   const menuItems = getMenuItems();
 
   return (
-    <div className="bg-white h-screen w-64 shadow-lg flex flex-col">
+    <div className="bg-white h-screen w-64 shadow-lg flex flex-col print:hidden">
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 bg-gradient-to-br from-teal-400 to-blue-500 rounded-lg flex items-center justify-center">

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import './PatientDetails.print.css';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getById } from '../../services/PatientService';
-import { Patient } from '../../types';
+import { Patient, Consultation, Document, VitalSigns } from '../../types';
 import Card from '../../components/Common/Card';
 import { User } from 'lucide-react';
 import { Clock, Thermometer, Droplets, Activity, Heart, Brain, Eye } from 'lucide-react';
@@ -11,7 +12,7 @@ const PatientDetails: React.FC = () => {
   const [patient, setPatient] = useState<Patient | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [vitalSigns, setVitalSigns] = useState([]);
+  const [vitalSigns, setVitalSigns] = useState<VitalSigns[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,7 +20,12 @@ const PatientDetails: React.FC = () => {
     setLoading(true);
     getById(Number(id))
       .then((data) => {
-        setPatient(data);
+        setPatient({
+          ...data,
+          consultations: data.consultations || [],
+          documents: data.documents || [],
+          vital_signs: data.vital_signs || [],
+        } as Patient);
         setVitalSigns(data.vital_signs || []);
         setLoading(false);
       })
@@ -35,6 +41,20 @@ const PatientDetails: React.FC = () => {
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
+      <div className="flex justify-between mb-4 print:justify-end">
+        <button
+          className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition print:hidden"
+          onClick={() => navigate(-1)}
+        >
+          Retour
+        </button>
+        <button
+          className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+          onClick={() => window.print()}
+        >
+          Télécharger / Imprimer
+        </button>
+      </div>
       <Card className="w-full min-h-[320px]">
         <div className="flex items-center space-x-4 mb-2">
           <div className="w-16 h-16 bg-gradient-to-br from-teal-400 to-blue-500 rounded-full flex items-center justify-center">
@@ -110,7 +130,7 @@ const PatientDetails: React.FC = () => {
       </Card>
       {/* Ajout affichage des documents du patient */}
       <Card title="Documents du patient" className="w-full min-h-[220px] mt-6">
-        {Array.isArray(patient?.documents) && patient.documents.length > 0 ? (
+        {Array.isArray(patient?.documents) && patient?.documents && patient.documents.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full mt-4 border rounded-lg shadow-sm">
               <thead className="bg-blue-50">
@@ -123,7 +143,7 @@ const PatientDetails: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {patient.documents.map((doc) => (
+                {patient.documents?.map((doc: Document) => (
                   <tr key={doc.id}>
                     <td className="py-2 px-2">{doc.name}</td>
                     <td className="py-2 px-2">{doc.type}</td>
@@ -141,7 +161,7 @@ const PatientDetails: React.FC = () => {
           <p className="text-gray-500">Aucun document enregistré</p>
         )}
       </Card>
-      <Card title="Consultations du patient" className="w-full min-h-[220px] mt-6">
+      <Card title="Consultations du patient" className="w-full min-h-[220px] mt-6 print:block">
 {Array.isArray(patient?.consultations) && patient.consultations.length > 0 ? (
   <div className="overflow-x-auto">
     <table className="w-full mt-4 border rounded-lg shadow-sm">

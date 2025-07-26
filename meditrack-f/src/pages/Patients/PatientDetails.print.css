@@ -1,0 +1,42 @@
+@media print {
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box;
+  }
+  .p-6 {
+    padding: 0 !important;
+  }
+  .max-w-4xl {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+  .mt-6, .mb-4 {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+  .Card {
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    border: none !important;
+    page-break-inside: avoid;
+  }
+  @page {
+    size: A4 portrait;
+    margin: 10mm;
+  }
+  table {
+    page-break-inside: avoid;
+    width: 100% !important;
+    font-size: 12px !important;
+  }
+  th, td {
+    padding: 4px !important;
+  }
+  .print\:block {
+    display: block !important;
+  }
+  .print\:hidden {
+    display: none !important;
+  }
+}
