@@ -1,3 +1,4 @@
+import AddInfirmierForm from './pages/Admin/AddInfirmierForm';
 import ConsultationDetails from './pages/Dashboard/ConsultationDetails';
 import PatientDocuments from './pages/Patients/PatientDocuments';
               <Route path="/patients/:id/documents" element={
@@ -32,6 +33,7 @@ import EditPatientForm from './pages/Admin/EditPatientForm';
 import PatientDetails from './pages/Patients/PatientDetails';
 import UsersList from './pages/Admin/NursesList';
 import EditUserForm from './pages/Admin/EditUserForm';
+import InfirmiersList from './pages/Admin/InfirmiersList';
 
 function App() {
   return (
@@ -138,6 +140,16 @@ function App() {
               <Route path="/admin/medecins/edit/:id" element={
                 <ProtectedRoute allowedRoles={['admin']}>
                   <EditDoctorForm />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin/infirmiers" element={
+                <ProtectedRoute allowedRoles={['admin']}>
+                  <InfirmiersList />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin/infirmiers/add" element={
+                <ProtectedRoute allowedRoles={['admin']}>
+                  <AddInfirmierForm />
                 </ProtectedRoute>
               } />
               <Route path="/admin/utilisateurs" element={

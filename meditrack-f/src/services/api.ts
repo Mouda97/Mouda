@@ -9,9 +9,13 @@ const api = axios.create({
   },
 });
 
-// Intercepteur pour ajouter le token d'authentification
+// Récupérer le cookie CSRF avant toute requête protégée
 api.interceptors.request.use(
-  (config) => {
+  async (config) => {
+    // Si le cookie XSRF-TOKEN n'est pas présent, le récupérer
+    if (!document.cookie.includes('XSRF-TOKEN')) {
+      await axios.get('http://localhost:8000/sanctum/csrf-cookie', { withCredentials: true });
+    }
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;

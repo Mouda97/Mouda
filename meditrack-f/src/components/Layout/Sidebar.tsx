@@ -47,6 +47,7 @@ const Sidebar: React.FC = () => {
           { path: '/admin/dashboard', label: 'Tableau de bord', icon: Home },
           { path: '/admin/patients', label: 'Gestion patients', icon: Users },
           { path: '/admin/medecins', label: 'Gestion médecins', icon: Stethoscope },
+          { path: '/admin/infirmiers', label: 'Gestion infirmiers', icon: Shield },
           { path: '/admin/utilisateurs', label: 'Gestion utilisateurs', icon: UserPlus },
           { path: '/consultations', label: 'Toutes les consultations', icon: ClipboardList },
           { path: '/rendez-vous', label: 'Rendez-vous', icon: Calendar },
