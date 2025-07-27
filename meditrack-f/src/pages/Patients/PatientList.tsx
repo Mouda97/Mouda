@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useVitalSigns } from '../../hooks/useVitalSigns';
 import { useNavigate } from 'react-router-dom';
 import { Search, Plus, Eye, Edit, User, Stethoscope, StickyNote } from 'lucide-react';
 import Card from '../../components/Common/Card';
@@ -17,6 +18,9 @@ import { usePatients } from '../../hooks/usePatients';
     const [filterStatus, setFilterStatus] = useState('all');
     const [filterAge, setFilterAge] = useState('');
     const [filterDiagnosis, setFilterDiagnosis] = useState('');
+
+    // Get all vital signs for nurse logic
+    const { vitalSigns, loading: vitalSignsLoading } = useVitalSigns();
 
     const filteredPatients = Array.isArray(patients) ? patients.filter(patient => {
       const matchesSearch =
@@ -91,6 +95,7 @@ import { usePatients } from '../../hooks/usePatients';
 
   return (
     <div className="p-6 space-y-6">
+      {/* Get all vital signs for nurse logic - already called at top of component */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
@@ -225,6 +230,25 @@ import { usePatients } from '../../hooks/usePatients';
                           >
                             Suivi
                           </Button>
+                          {/* Commencer un suivi button if no vital sign for today */}
+                          {(() => {
+                            // Find if patient has a vital sign for today
+                            const today = new Date();
+                            const todayStr = today.toISOString().slice(0, 10); // 'YYYY-MM-DD'
+                            const hasFollowUpToday = vitalSigns.some(vs => vs.patient_id === patient.id && vs.measurement_date.slice(0, 10) === todayStr);
+                            if (!hasFollowUpToday) {
+                              return (
+                                <Button
+                                  size="sm"
+                                  variant="success"
+                                  onClick={() => navigate(`/patients/${patient.id}/suivi`)}
+                                >
+                                  Commencer un suivi
+                                </Button>
+                              );
+                            }
+                            return null;
+                          })()}
                         </>
                       ) : null}
                       {user?.role === 'medecin' && (

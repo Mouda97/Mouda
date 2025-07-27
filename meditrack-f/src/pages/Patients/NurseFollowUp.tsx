@@ -2,18 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
-  Save,
-  AlertTriangle,
-  Clock,
-  Thermometer,
-  Activity,
-  Heart,
-  Droplets,
-  User,
-  Pill,
-  FileText,
-  CheckCircle,
-  Edit
+  Save
 } from 'lucide-react';
 import Card from '../../components/Common/Card';
 import Button from '../../components/Common/Button';
@@ -23,15 +12,6 @@ import { usePatients } from '../../hooks/usePatients';
 import { useVitalSigns } from '../../hooks/useVitalSigns';
 import { VitalSigns } from '../../types';
 
-interface VitalSignWithDetails extends VitalSigns {
-  created_at: string;
-  medications_administered: string[];
-  mobility: string;
-  consciousness: string;
-  nutrition: string;
-  notes?: string;
-  anomaly_detected: boolean;
-}
 
 interface FollowUpData {
   date: string;
@@ -120,10 +100,25 @@ const NurseFollowUp: React.FC = () => {
     setError(null);
     try {
       // Formatage des données pour l'API
+      // Format ISO 8601 pour measurement_date
+      let measurementDate = '';
+      if (form.date && form.time) {
+        // S'assure que form.time est bien au format HH:mm
+        const timeParts = form.time.split(':');
+        const hour = timeParts[0].padStart(2, '0');
+        const minute = (timeParts[1] || '00').padStart(2, '0');
+        // Format Laravel natif: YYYY-MM-DD HH:mm:ss
+        measurementDate = `${form.date} ${hour}:${minute}:00`;
+      } else {
+        // Fallback: aujourd'hui à minuit
+        const now = new Date();
+        const date = now.toISOString().split('T')[0];
+        measurementDate = `${date} 00:00:00`;
+      }
       const vitalData = {
         patient_id: patient?.id,
         nurse_id: user?.id,
-        measurement_date: `${form.date} ${form.time}:00`, // format SQL: 'YYYY-MM-DD HH:mm:ss'
+        measurement_date: measurementDate,
         temperature: parseFloat(form.temperature),
         blood_pressure: form.blood_pressure,
         heart_rate: parseInt(form.heart_rate),
@@ -131,9 +126,9 @@ const NurseFollowUp: React.FC = () => {
         mobility: form.mobility,
         consciousness: form.consciousness,
         nutrition: form.nutrition,
-        medications_administered: form.medications_administered,
+        medications_administered: Array.isArray(form.medications_administered) ? form.medications_administered : [],
         notes: form.comments,
-        anomaly_detected: form.anomaly_detected,
+        anomaly_detected: !!form.anomaly_detected,
       };
       // Si un suivi existe déjà aujourd'hui, on met à jour, sinon on crée
       const todaySign = vitalSigns.find(v => {
@@ -141,12 +136,29 @@ const NurseFollowUp: React.FC = () => {
         return datePart === form.date && v.patient_id === patient?.id;
       });
       const { toast } = await import('react-toastify');
+      console.log('Données envoyées au backend:', vitalData);
       if (todaySign) {
-        await import('../../services/VitalSignsService').then(svc => svc.update(todaySign.id, vitalData));
-        toast.success('Suivi mis à jour avec succès !');
+        await import('../../services/VitalSignsService').then(async svc => {
+          try {
+            const res = await svc.update(todaySign.id, vitalData);
+            console.log('Réponse update:', res);
+            toast.success('Suivi mis à jour avec succès !');
+          } catch (err) {
+            console.error('Erreur update:', err);
+            throw err;
+          }
+        });
       } else {
-        await import('../../services/VitalSignsService').then(svc => svc.create(vitalData));
-        toast.success('Suivi enregistré avec succès !');
+        await import('../../services/VitalSignsService').then(async svc => {
+          try {
+            const res = await svc.create(vitalData);
+            console.log('Réponse create:', res);
+            toast.success('Suivi enregistré avec succès !');
+          } catch (err) {
+            console.error('Erreur create:', err);
+            throw err;
+          }
+        });
       }
       await refetch();
       setLoading(false);
@@ -159,6 +171,8 @@ const NurseFollowUp: React.FC = () => {
         // Laravel retourne les erreurs de validation dans err.response.data.errors
         errorMsg = Object.values(err.response.data.errors).flat().join(' | ');
         setFieldErrors(err.response.data.errors);
+        console.log('Validation errors:', err.response.data.errors);
+        console.log('Full error object:', err);
       } else if (err.message) {
         errorMsg = err.message;
       }
@@ -179,11 +193,46 @@ const NurseFollowUp: React.FC = () => {
 
   return (
     <div className="p-6 space-y-6">
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          <strong>Erreur :</strong> {error}
+        </div>
+      )}
       <div className="flex flex-col md:flex-row justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-800">Suivi infirmier - {patient.first_name} {patient.last_name}</h2>
-        <Button icon={ArrowLeft} variant="secondary" onClick={() => navigate(-1)}>
-          Retour
-        </Button>
+        <div className="flex gap-2">
+          <Button icon={ArrowLeft} variant="secondary" onClick={() => navigate(-1)}>
+            Retour
+          </Button>
+          {/* Bouton Modifier le suivi du jour */}
+          {(() => {
+            const today = new Date().toISOString().split('T')[0];
+            const todaySign = vitalSigns.find(v => v.measurement_date.split(' ')[0] === today && v.patient_id === patient.id);
+            if (todaySign) {
+              return (
+                <Button variant="secondary" onClick={() => {
+                  setForm({
+                    date: today,
+                    time: todaySign.measurement_date.split(' ')[1]?.slice(0,5) || '',
+                    temperature: String(todaySign.temperature),
+                    blood_pressure: todaySign.blood_pressure,
+                    heart_rate: String(todaySign.heart_rate),
+                    oxygen_saturation: String(todaySign.oxygen_saturation),
+                    mobility: todaySign.mobility,
+                    consciousness: todaySign.consciousness,
+                    nutrition: todaySign.nutrition,
+                    medications_administered: todaySign.medications_administered || [],
+                    comments: todaySign.notes || '',
+                    anomaly_detected: todaySign.anomaly_detected
+                  });
+                }}>
+                  Modifier le suivi du jour
+                </Button>
+              );
+            }
+            return null;
+          })()}
+        </div>
       </div>
 
       <Card title="Constantes vitales">
@@ -235,6 +284,20 @@ const NurseFollowUp: React.FC = () => {
               <div key={i} className="text-red-600 text-sm font-semibold mt-1">{err.replace('field', 'champ')}</div>
             ))}
           </div>
+        </div>
+        <div className="mt-4">
+          <label className="block mb-2 text-sm font-medium text-gray-700">Médicaments administrés (séparés par des virgules)</label>
+          <Input
+            name="medications_administered"
+            value={form.medications_administered.join(', ')}
+            onChange={e => setForm(prev => ({
+              ...prev,
+              medications_administered: e.target.value.split(',').map(med => med.trim()).filter(med => med.length > 0)
+            }))}
+          />
+          {fieldErrors.medications_administered && fieldErrors.medications_administered.map((err, i) => (
+            <div key={i} className="text-red-600 text-sm font-semibold mt-1">{err.replace('field', 'champ')}</div>
+          ))}
         </div>
         <div className="mt-4">
           <label className="block mb-2 text-sm font-medium text-gray-700">Commentaires</label>

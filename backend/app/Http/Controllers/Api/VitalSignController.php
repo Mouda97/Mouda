@@ -52,6 +52,7 @@ class VitalSignController extends Controller
 
     public function store(Request $request)
     {
+        \Log::info('Données reçues pour vital sign:', $request->all());
         $validator = Validator::make($request->all(), [
             'patient_id' => 'required|exists:patients,id',
             'measurement_date' => 'required|date',
@@ -75,9 +76,11 @@ class VitalSignController extends Controller
         }
 
         $validated = $validator->validated();
+        \Log::info('Données validées pour vital sign:', $validated);
         $vital = VitalSign::create(array_merge($validated, [
             'nurse_id' => Auth::id(),
         ]));
+        \Log::info('Vital sign créé:', $vital->toArray());
 
         return response()->json([
             'success' => true,

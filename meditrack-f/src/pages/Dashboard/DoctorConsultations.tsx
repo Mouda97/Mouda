@@ -62,7 +62,7 @@ const DoctorConsultations: React.FC = () => {
                     <td className="py-4 px-4">{c.recommendations}</td>
                     <td className="py-4 px-4">{c.note || '-'}</td>
                     <td className="py-4 px-4">
-                      <ConsultationActions id={c.id} canEdit={true} canDelete={true} />
+                      <ConsultationActions id={c.id} canEdit={true} canDelete={true} onDelete={refetch} />
                     </td>
                   </tr>
                 );
